@@ -1,0 +1,4 @@
+import http from 'node:http';
+import {readFile} from 'node:fs/promises';
+const files={'/':'index.html','/index.html':'index.html','/src/app.js':'src/app.js','/src/model.js':'src/model.js','/src/export.js':'src/export.js','/src/style.css':'src/style.css'};
+http.createServer(async(req,res)=>{try{const path=new URL(req.url,'http://localhost').pathname;const file=files[path];if(!file){res.writeHead(404);res.end();return;}const body=await readFile(new URL(file,import.meta.url));res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Cache-Control','no-cache');res.end(body);}catch{res.writeHead(500);res.end('No se pudo abrir el archivo.');}}).listen(Number(process.env.PORT)||5180,'0.0.0.0',()=>console.log('TurnoListo en puerto '+(process.env.PORT||5180)));
